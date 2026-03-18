@@ -1,0 +1,20 @@
+\documentclass[../../project_master.tex]{subfiles}
+\begin{document}
+\section{Lifetime Model}
+A compact way to represent radiation-induced lifetime degradation is to assume that defects act as additional recombination centers. If the pre-radiation lifetime is $\tzero$ and the radiation-induced defect concentration is $\Nd$, a reduced model is
+\begin{equation}
+\frac{1}{\teff} = \frac{1}{\tzero} + K_\tau \Nd.
+\end{equation}
+
+If the defect concentration is itself taken to be proportional to fluence,
+\begin{equation}
+\Nd = k_D \PhiF,
+\end{equation}
+then the lifetime law becomes
+\begin{equation}
+\frac{1}{\teff} = \frac{1}{\tzero} + \beta \PhiF,
+\end{equation}
+where $\beta = K_\tau k_D$.
+
+This form is useful because it directly links exposure to a semiconductor property that strongly affects charge transport and recombination.
+\end{document}

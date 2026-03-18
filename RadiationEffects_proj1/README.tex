@@ -1,0 +1,277 @@
+\documentclass[project_master.tex]{subfiles}
+\begin{document}
+\title{\projecttitle\\[0.4em]\large Repository Overview and Execution Guide}
+\author{}
+\date{}
+\maketitle
+
+\section{Project Overview}
+This repository is organized around a single physics chain:
+\begin{equation}
+\text{radiation field}
+\rightarrow
+\text{energy transfer in silicon}
+\rightarrow
+\text{lattice defects}
+\rightarrow
+\text{material-property degradation}
+\rightarrow
+\text{device degradation}.
+\end{equation}
+
+The project is intentionally split into two main computational layers.
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{Geant4 layer:} simulates radiation transport and interaction physics in a silicon slab.
+    \item \textbf{MATLAB layer:} converts radiation-damage proxies into defect density, lifetime degradation, diffusion-length reduction, leakage-current growth, and charge-collection trends.
+\end{enumerate}
+
+The goal is not to claim that Geant4 alone predicts final device failure. Rather, the project uses Geant4 for the front-end radiation-matter interaction physics and MATLAB for the simplified solid-state and device-degradation interpretation.
+
+\section{Repository Structure}
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{project\_plan.tex}: project objectives, milestones, and module structure.
+    \item \texttt{docs/physics\_notes/}: background notes on radiation interactions, displacement damage, defect physics, and device degradation.
+    \item \texttt{docs/derivations/}: compact derivations for the simplified MATLAB models.
+    \item \texttt{docs/interview/talk\_outline.tex}: speaking-oriented narrative for an interview presentation.
+    \item \texttt{slides/presentation\_outline.tex}: slide-by-slide structure for a talk.
+    \item \texttt{geant4/}: Geant4 application source, macros, and output location.
+    \item \texttt{matlab/}: MATLAB scripts and helper functions for the degradation pipeline.
+    \item \texttt{references/references.bib}: placeholder bibliography for later expansion.
+\end{itemize}
+
+\section{Recommended Technical Scope}
+A practical interview-scale scope is:
+\begin{enumerate}[leftmargin=1.5em]
+    \item Geant4 simulation of proton or neutron irradiation of a silicon slab.
+    \item Extraction of depth-dependent energy deposition and recoil-like observables.
+    \item MATLAB conversion of a fluence or damage proxy into a defect-density model.
+    \item MATLAB conversion of defect density into lifetime degradation and diffusion-length reduction.
+    \item MATLAB interpretation of device-level degradation through leakage current and charge-collection trends.
+\end{enumerate}
+
+\section{End-to-End Workflow}
+The intended order of use is:
+\begin{enumerate}[leftmargin=1.5em]
+    \item Build the Geant4 application.
+    \item Run a Geant4 macro such as \texttt{run\_proton\_silicon.mac}.
+    \item Generate CSV outputs from Geant4.
+    \item Point MATLAB to those CSV files.
+    \item Run the MATLAB import pipeline to generate plots and summary outputs.
+\end{enumerate}
+
+In compact form,
+\begin{equation}
+\text{Geant4 output CSVs} \rightarrow \text{MATLAB import} \rightarrow \text{defect model} \rightarrow \text{device metrics}.
+\end{equation}
+
+\section{What Geant4 Produces}
+The Geant4 side of the repository is designed to produce three main CSV files:
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{event\_summary.csv}: total deposited energy per event.
+    \item \texttt{depth\_edep.csv}: depth-binned deposited energy through the silicon slab.
+    \item \texttt{recoil\_candidates.csv}: ion secondaries produced in silicon, used as an initial recoil-like proxy.
+\end{itemize}
+
+These files are not yet a full defect chemistry calculation. Instead, they provide physics-based observables that can be used to motivate and drive the simplified defect model in MATLAB.
+
+\section{What MATLAB Produces}
+The MATLAB side of the repository uses the Geant4 outputs, together with simple phenomenological relations, to produce:
+\begin{itemize}[leftmargin=1.5em]
+    \item defect density as a function of fluence,
+    \item effective carrier lifetime,
+    \item diffusion length,
+    \item leakage current increase,
+    \item charge-collection trend.
+\end{itemize}
+
+The simplified modeling chain is built around relations such as
+\begin{align}
+\Nd &= k_D \PhiF, \\
+\frac{1}{\teff} &= \frac{1}{\tzero} + K_\tau \Nd, \\
+L &= \sqrt{D\,\teff}, \\
+\Delta I &= \alpha \, \PhiF \, V.
+\end{align}
+
+These equations are not meant to replace TCAD or detailed defect spectroscopy. They are used here to create a clean, defensible bridge from radiation transport to semiconductor degradation.
+
+\section{Detailed Build and Run Guide}
+\subsection{Step 1: Open a Terminal and Go to the Geant4 Folder}
+Move into the Geant4 application directory:
+\begin{verbatim}
+cd /path/to/silad_project_tex/geant4
+\end{verbatim}
+
+Here, \texttt{/path/to/} should be replaced with the actual location of the repository on the local machine.
+
+\subsection{Step 2: Create a Build Directory}
+Create a separate build directory so that object files and executables do not clutter the source tree:
+\begin{verbatim}
+mkdir -p build
+cd build
+\end{verbatim}
+
+\subsection{Step 3: Configure the Project with CMake}
+Run:
+\begin{verbatim}
+cmake ..
+\end{verbatim}
+
+This step reads \texttt{CMakeLists.txt}, checks for the Geant4 installation, and prepares the build system.
+
+\subsection{Step 4: Compile the Code}
+Build the application with:
+\begin{verbatim}
+make -j4
+\end{verbatim}
+
+The number \texttt{4} may be increased or decreased depending on the number of CPU cores available.
+
+\subsection{Step 5: Check That an Executable Exists}
+List the contents of the build directory:
+\begin{verbatim}
+ls
+\end{verbatim}
+
+There should be a compiled executable. In the examples below, the executable is assumed to be named
+\begin{verbatim}
+./siliconRadDamage
+\end{verbatim}
+If the actual name is different, substitute that name in all later commands.
+
+\subsection{Step 6: Run the Proton Macro}
+To run the proton case:
+\begin{verbatim}
+./siliconRadDamage ../macros/run_proton_silicon.mac
+\end{verbatim}
+
+This should execute the Geant4 simulation and write CSV output files.
+
+\subsection{Step 7: Optionally Run the Neutron Macro}
+To compare with a neutron-driven case:
+\begin{verbatim}
+./siliconRadDamage ../macros/run_neutron_silicon.mac
+\end{verbatim}
+
+\subsection{Step 8: Locate the CSV Files}
+After a run, check for:
+\begin{verbatim}
+event_summary.csv
+depth_edep.csv
+recoil_candidates.csv
+\end{verbatim}
+
+Depending on the current working directory and file-writing logic, these may appear either in:
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{geant4/build/}, or
+    \item \texttt{geant4/output/}.
+\end{itemize}
+
+If they appear in the build directory, move them into the dedicated output folder:
+\begin{verbatim}
+mv *.csv ../output/
+\end{verbatim}
+
+\subsection{Step 9: MATLAB-Side Execution}
+Open MATLAB and move into the MATLAB directory:
+\begin{verbatim}
+cd('/path/to/silad_project_tex/matlab')
+\end{verbatim}
+
+Then run the Geant4 import pipeline:
+\begin{verbatim}
+main_import_geant4_pipeline
+\end{verbatim}
+
+This script reads the CSV files, constructs a simple damage proxy, estimates a nominal fluence, and produces degradation plots and summary outputs.
+
+\subsection{Step 10: Expected MATLAB Outputs}
+After a successful run, the MATLAB side should generate outputs in \texttt{matlab/output/}. These may include figures and summary tables for:
+\begin{itemize}[leftmargin=1.5em]
+    \item defect density versus fluence,
+    \item carrier lifetime versus fluence,
+    \item diffusion length versus fluence,
+    \item leakage current versus fluence,
+    \item charge-collection efficiency trend.
+\end{itemize}
+
+\section{A Minimal Working Example}
+A compact Geant4 terminal session is:
+\begin{verbatim}
+cd /path/to/silad_project_tex/geant4
+mkdir -p build
+cd build
+cmake ..
+make -j4
+./siliconRadDamage ../macros/run_proton_silicon.mac
+mv *.csv ../output/
+\end{verbatim}
+
+Then in MATLAB:
+\begin{verbatim}
+cd('/path/to/silad_project_tex/matlab')
+main_import_geant4_pipeline
+\end{verbatim}
+
+\section{How to Explain the Workflow in a Presentation}
+A concise and technically honest explanation is:
+\begin{quote}
+I use Geant4 to simulate radiation transport through silicon and extract deposited energy, depth-dependent energy deposition, and recoil-like secondary production. These outputs serve as physics-based proxies for where displacement damage is likely to occur. I then use MATLAB to convert those proxies into defect density, lifetime degradation, diffusion-length reduction, and device-level performance loss.
+\end{quote}
+
+This framing is strong because it avoids overclaiming while still showing a coherent multi-stage modeling strategy.
+
+\section{Common Practical Issues}
+\subsection{Geant4 Not Found During CMake}
+If CMake cannot find Geant4, the Geant4 environment may not be sourced. A common fix is:
+\begin{verbatim}
+source /path/to/geant4-install/bin/geant4.sh
+\end{verbatim}
+
+After sourcing the environment, rerun:
+\begin{verbatim}
+cmake ..
+make -j4
+\end{verbatim}
+
+\subsection{No CSV Files After Running a Macro}
+If the simulation runs but no CSV files are found, check whether they were written into the current build directory rather than the dedicated output directory.
+
+\subsection{MATLAB Cannot Find the CSV Files}
+If MATLAB cannot locate the Geant4 CSV files, inspect the path settings inside \texttt{main\_import\_geant4\_pipeline.m}. Ensure that the script points to the actual directory containing the CSV outputs.
+
+\subsection{Too Few Recoil Candidates}
+If \texttt{recoil\_candidates.csv} contains very few entries, possible reasons include:
+\begin{itemize}[leftmargin=1.5em]
+    \item too few simulated events,
+    \item beam energy too low,
+    \item a deliberately simple recoil proxy that still needs refinement.
+\end{itemize}
+
+This is acceptable at the current stage because the goal is first to establish a functioning end-to-end workflow.
+
+\section{Recommended First Milestone}
+A strong first milestone is to make one proton case work from beginning to end:
+\begin{enumerate}[leftmargin=1.5em]
+    \item build the Geant4 executable,
+    \item run the proton macro,
+    \item confirm the three CSV files exist,
+    \item run the MATLAB import pipeline,
+    \item confirm that the degradation plots are generated.
+\end{enumerate}
+
+Once this is working, the project already has a complete demonstration chain from radiation transport to device-level interpretation.
+
+\section{Next Technical Improvement}
+After the basic workflow is confirmed, the most useful improvement is to make the Geant4 displacement-damage proxy more physically meaningful. Examples include:
+\begin{itemize}[leftmargin=1.5em]
+    \item more careful tagging of elastic and inelastic nuclear interactions,
+    \item better recording of silicon recoil energies,
+    \item threshold-based displacement criteria,
+    \item improved depth-resolved damage metrics.
+\end{itemize}
+
+These improvements would strengthen the bridge from transport physics to defect generation.
+
+\bibliographystyle{unsrtnat}
+\bibliography{references/references}
+\end{document}

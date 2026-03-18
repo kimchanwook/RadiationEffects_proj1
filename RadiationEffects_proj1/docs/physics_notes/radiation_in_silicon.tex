@@ -1,0 +1,13 @@
+\documentclass[../../project_master.tex]{subfiles}
+\begin{document}
+\section{Radiation Interactions in Silicon}
+Radiation interacts with silicon through two broad channels: ionization and non-ionizing energy transfer. Ionization creates electron-hole pairs and is central to total ionizing dose effects. Non-ionizing interactions transfer energy to silicon atoms in the lattice and are the starting point for displacement damage.
+
+For the present project, the emphasis is on the second channel. When sufficient energy is transferred to a lattice atom, that atom can be displaced from its site, producing a vacancy-interstitial pair. Repeated interactions may then create defect clusters or more complex electrically active defects.
+
+\subsection{Why Particle Type Matters}
+Charged particles such as protons can produce both ionization and displacement damage. Neutrons do not ionize directly, but through nuclear collisions they can transfer energy to recoil nuclei, which then damage the lattice. This makes neutrons especially clean examples for displacement-damage discussions.
+
+\subsection{Useful Geant4 Outputs}
+For a simple silicon slab, Geant4 can provide deposited energy, depth profiles, secondary-particle information, and recoil-event observables. These are not yet direct defect populations, but they are the physically meaningful front-end quantities that motivate later defect modeling.
+\end{document}
