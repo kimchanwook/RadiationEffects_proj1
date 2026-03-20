@@ -1,0 +1,50 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\title{Derivation Notes for Cryogenic Device Recovery Model}
+\begin{document}
+\maketitle
+
+Assume the trapped-charge population decays with a first-order rate law:
+\[
+\frac{dQ_{\mathrm{trap}}}{dt} = -\frac{1}{\tau_{\mathrm{rec}}(T)}Q_{\mathrm{trap}}.
+\]
+
+Integrating gives
+\[
+Q_{\mathrm{trap}}(t,T) = Q_0 \exp\!\left(-\frac{t}{\tau_{\mathrm{rec}}(T)}\right),
+\]
+where $Q_0$ is the trapped-charge population immediately after irradiation or immediately after a trapping event.
+
+Now assume the recovery time constant is thermally activated:
+\[
+\tau_{\mathrm{rec}}(T)=\tau_0 \exp\!\left(\frac{E_a}{k_B T}\right).
+\]
+
+Substituting into the recovery law gives
+\[
+Q_{\mathrm{trap}}(t,T)=Q_0 \exp\!\left[-\frac{t}{\tau_0}\exp\!\left(-\frac{E_a}{k_B T}\right)\right].
+\]
+
+This makes the low-temperature limit clear. As $T$ decreases, the factor
+\[
+\exp\!\left(-\frac{E_a}{k_B T}\right)
+\]
+becomes very small, so the effective relaxation slows strongly.
+
+A useful engineering metric is the time to 50\% recovery, obtained from
+\[
+\frac{Q_{\mathrm{trap}}}{Q_0}=\frac{1}{2}.
+\]
+This gives
+\[
+t_{50}(T)=\tau_{\mathrm{rec}}(T)\ln 2.
+\]
+
+Therefore,
+\[
+t_{50}(T)=\tau_0 \ln 2\; \exp\!\left(\frac{E_a}{k_B T}\right),
+\]
+which grows rapidly as temperature decreases.
+
+\end{document}
