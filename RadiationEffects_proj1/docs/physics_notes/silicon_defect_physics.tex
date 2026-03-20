@@ -1,21 +1,15 @@
-\documentclass[../../project_master.tex]{subfiles}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\title{Silicon Defect Physics}
 \begin{document}
-\section{Silicon Defect Physics}
-Radiation-induced defects in silicon are important because they create electrically active states that modify carrier statistics and transport. In a reduced semiconductor model, the most important consequences are enhanced recombination, enhanced trapping, and increased generation current.
+\maketitle
 
-\subsection{Trap and Recombination Centers}
-A defect level in the bandgap can capture an electron or a hole and later emit it. When a defect efficiently captures both carrier types, it can serve as a Shockley--Read--Hall recombination center. This reduces the minority-carrier lifetime and is especially important for devices that depend on long carrier lifetimes or efficient charge collection.
+Defects in silicon can introduce electronic states in the bandgap. These states act as recombination and trapping centers. A simple phenomenological lifetime model is
+\[
+\frac{1}{\tau_{\mathrm{eff}}} = \frac{1}{\tau_0} + K_\tau N_D.
+\]
 
-\subsection{Lifetime Degradation}
-If the defect population grows with radiation exposure, the effective lifetime is expected to fall. In a simple reduced model, the inverse lifetime grows approximately linearly with defect density, which motivates the working expression
-\begin{equation}
-\frac{1}{\teff} = \frac{1}{\tzero} + K_\tau \Nd.
-\end{equation}
+As the defect density increases, carrier lifetime decreases.
 
-\subsection{Transport Consequences}
-Once the lifetime decreases, the diffusion length also decreases through
-\begin{equation}
-L = \sqrt{D\,\teff}.
-\end{equation}
-The resulting reduction in diffusion length is one of the cleanest ways to connect microscopic defect physics to device-level signal degradation.
 \end{document}

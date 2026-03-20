@@ -1,14 +1,11 @@
-\documentclass[../../project_master.tex]{subfiles}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\title{Displacement Damage}
 \begin{document}
-\section{Displacement Damage}
-Displacement damage begins when radiation transfers enough energy to a silicon atom that the atom is ejected from its lattice site. The displaced atom is often called a primary knock-on atom. Its subsequent motion may generate additional displacements, producing a small cascade of lattice disorder.
+\maketitle
 
-\subsection{Basic Picture}
-The simplest defect pair is a vacancy plus an interstitial. The vacancy is the empty lattice site left behind; the interstitial is the displaced silicon atom lodged in a non-lattice position. These defects may remain isolated, recombine, migrate, or combine with impurities and with one another.
+Displacement damage begins with a primary knock-on atom. If the transferred energy exceeds the displacement threshold, the lattice atom can leave its site and create a vacancy-interstitial pair. Repeated events can generate clusters and more complex defect structures.
 
-\subsection{Why It Matters Electrically}
-Even if the crystal still appears macroscopically intact, these defects alter the electronic structure of silicon. They may introduce energy levels in the bandgap, act as recombination centers, increase generation current, and reduce carrier transport effectiveness.
+This project treats displacement damage using a simplified proxy connected to Geant4 outputs.
 
-\subsection{Bridge to Modeling}
-A full atomistic treatment is outside the scope of the present project. Instead, the project uses a reduced model in which displacement-damage exposure is mapped to an effective defect concentration. That concentration is then used to estimate lifetime and leakage-current degradation.
 \end{document}

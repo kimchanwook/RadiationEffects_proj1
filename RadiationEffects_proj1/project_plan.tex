@@ -1,54 +1,42 @@
-\documentclass[project_master.tex]{subfiles}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\title{Project Plan: From Radiation-Induced Defects to Device Degradation in Silicon}
 \begin{document}
-\section{Project Objective}
-The objective is to construct a compact, physics-based framework that connects radiation transport in silicon to semiconductor degradation. Geant4 provides the front-end description of particle interactions and energy transfer, while MATLAB provides the back-end defect and device-degradation model.
+\maketitle
 
-\section{Main Modules}
-\subsection{Module 1: Geant4 Radiation Transport}
-A simple silicon slab geometry is irradiated with protons or neutrons. The goal is not to build a full mission-grade transport model, but to obtain interpretable observables such as deposited energy, secondary production, recoil events, and depth-dependent damage proxies.
+\section*{Objective}
+Use Geant4 to model radiation transport in silicon and MATLAB to connect radiation-induced damage to semiconductor degradation and device performance loss.
 
-\subsection{Module 2: Defect Build-Up Model}
-A first-order defect model maps fluence or a displacement-damage proxy to an effective defect concentration:
-\begin{equation}
-\Nd = k_D \PhiF,
-\end{equation}
-or, if depth information is retained,
-\begin{equation}
-\Nd(z) = k_D\, \dd(z).
-\end{equation}
+\section*{Modules}
+\subsection*{Module 1: Geant4}
+Simulate proton or neutron transport in a silicon slab and extract deposited energy, depth-dependent deposition, and recoil-like events.
 
-\subsection{Module 3: Lifetime and Transport Degradation}
-Defects are treated as recombination-active centers that reduce the effective carrier lifetime:
-\begin{equation}
-\frac{1}{\teff} = \frac{1}{\tzero} + K_\tau \Nd.
-\end{equation}
-The corresponding diffusion length is then
-\begin{equation}
-L = \sqrt{D\,\teff}.
-\end{equation}
+\subsection*{Module 2: Defect Model}
+Use a first-order relation
+\[
+N_D = k_D \Phi
+\]
+to relate fluence $\Phi$ to defect concentration $N_D$.
 
-\subsection{Module 4: Device-Level Degradation}
-For a silicon diode or detector, leakage current growth can be modeled with
-\begin{equation}
-\Delta I = \alpha \PhiF V,
-\end{equation}
-where $V$ is the active or depleted volume.
+\subsection*{Module 3: Lifetime Model}
+Use
+\[
+\frac{1}{\tau_{\mathrm{eff}}} = \frac{1}{\tau_0} + K_\tau N_D
+\]
+to represent recombination-center driven lifetime degradation.
 
-\section{Deliverables}
-\begin{itemize}[leftmargin=1.5em]
-    \item Geant4 figures showing deposited-energy and depth-dependent damage observables.
-    \item MATLAB figures showing defect concentration, lifetime, diffusion length, and leakage current versus fluence.
-    \item A concise interview presentation that explains the physical chain from microscopic damage to measurable device degradation.
+\subsection*{Module 4: Device Metrics}
+Use diffusion length and leakage current trends:
+\[
+L = \sqrt{D\tau_{\mathrm{eff}}}, \qquad \Delta I = \alpha \Phi V.
+\]
+
+\section*{Deliverables}
+\begin{itemize}
+    \item Geant4 CSV outputs
+    \item MATLAB figures for defect density, lifetime, diffusion length, and leakage current
+    \item technical notes and slide outline
 \end{itemize}
 
-\section{Milestones}
-\begin{enumerate}[leftmargin=1.5em]
-    \item Finalize the conceptual model and notes.
-    \item Build the MATLAB back-end first to establish visible project progress.
-    \item Add the Geant4 front-end and connect its output to the MATLAB pipeline.
-    \item Convert the finished work into slides and speaking notes.
-\end{enumerate}
-
-\section{Why This Project Works Well}
-This project is attractive because it is technically broad without becoming unmanageably large. It shows familiarity with radiation-matter interaction, defect physics in crystalline silicon, and engineering interpretation at the device level. It also has a clear computational split: Geant4 handles transport, while MATLAB handles solid-state interpretation.
 \end{document}

@@ -1,13 +1,14 @@
-\documentclass[../../project_master.tex]{subfiles}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\title{Leakage Current Model Note}
 \begin{document}
-\section{Leakage Current Model}
-A standard reduced model for radiation-induced leakage-current increase in silicon detectors is
-\begin{equation}
-\Delta I = \alpha \PhiF V,
-\end{equation}
-where $\alpha$ is the current-related damage coefficient, $\PhiF$ is the fluence, and $V$ is the active volume.
+\maketitle
 
-This expression is phenomenological but very useful in practice. It condenses complex defect-assisted generation physics into a single damage parameter that scales linearly with exposure and device volume.
+A common first-order trend for reverse leakage-current increase is
+\[
+\Delta I = \alpha \Phi V.
+\]
+This is useful as a compact device-level metric for radiation damage.
 
-For presentation purposes, this model is particularly effective because it connects radiation damage to a directly measurable electrical quantity with minimal mathematical overhead.
 \end{document}

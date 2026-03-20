@@ -1,15 +1,14 @@
-\documentclass[../../project_master.tex]{subfiles}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\title{Diffusion Length Note}
 \begin{document}
-\section{Diffusion Length Model}
-The carrier diffusion length is related to the diffusivity $D$ and effective lifetime $\teff$ by
-\begin{equation}
-L = \sqrt{D\,\teff}.
-\end{equation}
+\maketitle
 
-Substituting the reduced lifetime model gives
-\begin{equation}
-L(\PhiF) = \sqrt{\frac{D}{\tfrac{1}{\tzero}+\beta \PhiF}}.
-\end{equation}
+Diffusion length is related to diffusivity and lifetime by
+\[
+L = \sqrt{D\tau}.
+\]
+As radiation damage reduces $\tau$, the diffusion length decreases.
 
-This equation makes the qualitative physics transparent: as fluence increases, the lifetime decreases, and the diffusion length decreases accordingly. In devices that depend on minority-carrier transport or efficient charge collection, this directly produces measurable degradation.
 \end{document}

@@ -1,22 +1,18 @@
-\documentclass[../../project_master.tex]{subfiles}
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\title{Talk Outline}
 \begin{document}
-\section{Interview Talk Outline}
-The talk should be structured as a clear chain rather than as disconnected technical facts.
+\maketitle
 
-\subsection*{Opening Message}
-The central message is that radiation damage in silicon can be understood as a multiscale physics problem: particle interactions deposit energy and create atomic disorder, that disorder introduces electrically active defects, and those defects degrade measurable device performance.
-
-\subsection*{Suggested Narrative}
-\begin{enumerate}[leftmargin=1.5em]
-    \item Explain why silicon radiation damage matters in space, defense, and high-reliability electronics.
-    \item Distinguish ionization from displacement damage.
-    \item Show how Geant4 models the interaction stage inside silicon.
-    \item Explain how recoil events and displacement energy transfer motivate an effective defect-density model.
-    \item Show how defects shorten carrier lifetime and reduce diffusion length.
-    \item Show how device observables such as leakage current worsen with exposure.
-    \item End by emphasizing that the framework connects microscopic physics to engineering decisions.
+\begin{enumerate}
+    \item Motivation
+    \item Radiation interactions in silicon
+    \item Geant4 transport setup
+    \item From recoil events to defects
+    \item Defect-driven lifetime degradation
+    \item Diffusion length and leakage current trends
+    \item Device consequences
+    \item Limitations and future work
 \end{enumerate}
 
-\subsection*{Tone to Use}
-The strongest tone is technically honest and modest: Geant4 is presented as the radiation-transport engine, while MATLAB provides a reduced but physically interpretable solid-state model. This avoids overclaiming while still demonstrating strong interdisciplinary understanding.
 \end{document}
