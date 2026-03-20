@@ -1,0 +1,121 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{physics}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\newcommand{\kb}{k_\mathrm{B}}
+\newcommand{\taueff}{\tau_\mathrm{eff}}
+\begin{document}
+
+\title{Module 5: Persistent Trapping and Slow Recovery at Cryogenic Temperature}
+\author{}
+\date{}
+\maketitle
+
+\section{Purpose of this module}
+This module converts the cryogenic kinetics into a concrete device-level consequence. The central claim is that radiation history can persist longer at low temperature because trap emission and annealing become too slow to erase that history on operational timescales.
+
+\section{The main model}
+The project models trapped-charge recovery as
+\begin{equation}
+Q_{\mathrm{trap}}(t,T) = Q_0 \exp\!\left(-\frac{t}{\tau_{\mathrm{rec}}(T)}\right),
+\end{equation}
+where $Q_0$ is the initial trapped charge after irradiation and $\tau_{\mathrm{rec}}(T)$ is the recovery time constant.
+
+\section{Why exponential recovery is reasonable}
+Exponential recovery is the standard solution of a first-order relaxation law. Suppose trapped charge leaves the trapped population at a rate proportional to how much trapped charge remains:
+\begin{equation}
+\frac{dQ_{\mathrm{trap}}}{dt} = -\frac{1}{\tau_{\mathrm{rec}}}Q_{\mathrm{trap}}.
+\end{equation}
+Separating variables and integrating gives
+\begin{align}
+\int \frac{dQ_{\mathrm{trap}}}{Q_{\mathrm{trap}}} &= -\int \frac{dt}{\tau_{\mathrm{rec}}}, \\
+\ln Q_{\mathrm{trap}} &= -\frac{t}{\tau_{\mathrm{rec}}}+C,
+\end{align}
+so
+\begin{equation}
+Q_{\mathrm{trap}}(t,T)=Q_0 e^{-t/\tau_{\mathrm{rec}}(T)}.
+\end{equation}
+
+\subsection{Analogy}
+Think of popcorn kernels escaping from a bowl through a small hole. If at every moment the escape rate is proportional to how many kernels remain, you get exponential emptying. Here the trapped charge population is the bowl, and the temperature-dependent recovery time controls how fast the hole effectively works.
+
+\section{Connecting recovery time to cryogenic kinetics}
+The recovery time is modeled with an Arrhenius law such as
+\begin{equation}
+\tau_{\mathrm{rec}}(T) = \tau_{\mathrm{ref}} \exp\!\left(\frac{E_r}{\kb T}\right).
+\end{equation}
+This form is the reciprocal of an activated rate. As temperature decreases, the time constant grows rapidly.
+
+\section{Physical interpretations of $\tau_{\mathrm{rec}}$}
+Depending on what mechanism dominates, the recovery time may represent:
+\begin{itemize}
+    \item thermal emission from charge traps,
+    \item structural recovery through annealing,
+    \item an effective combination of both.
+\end{itemize}
+
+The exact microscopic interpretation can vary, but the project-level message stays the same: lower temperature means longer persistence.
+
+\section{Time to 50\% recovery}
+A useful metric for plots and engineering discussion is the half-recovery time. Set
+\begin{equation}
+Q_{\mathrm{trap}}(t_{50},T)=\frac{Q_0}{2}.
+\end{equation}
+Then
+\begin{align}
+\frac{1}{2} &= e^{-t_{50}/\tau_{\mathrm{rec}}}, \\
+\ln 2 &= \frac{t_{50}}{\tau_{\mathrm{rec}}},
+\end{align}
+so
+\begin{equation}
+t_{50}(T)=\tau_{\mathrm{rec}}(T)\ln 2.
+\end{equation}
+
+This is a very convenient summary because it directly shows how quickly radiation history is forgotten at each temperature.
+
+\section{Why this matters to devices}
+Persistent trapped charge can affect device behavior in several ways:
+\begin{itemize}
+    \item baseline offsets can remain longer,
+    \item threshold-like shifts can last longer,
+    \item charge collection recovery can be delayed,
+    \item time-dependent noise or drift may carry memory of prior radiation exposure.
+\end{itemize}
+
+The project does not need to model every transistor detail to make the core point. Even a simple trapped-charge persistence law already shows why low-temperature operation can preserve radiation signatures.
+
+\section{Connecting the whole cryogenic story}
+Modules 4 and 5 together tell a clean progression:
+\begin{enumerate}[label=\arabic*.]
+    \item cooling suppresses migration,
+    \item cooling suppresses trap emission,
+    \item cooling suppresses annealing,
+    \item therefore trapped charge and damage signatures can persist,
+    \item therefore devices can remember radiation history for longer.
+\end{enumerate}
+
+\section{What this means operationally}
+At room temperature, some damage signatures can partially relax during ordinary operation. At cryogenic temperature, that same recovery can become so slow that the device effectively stores a memory of irradiation over the time window relevant to the system.
+
+\section{What to remember from this module}
+\begin{itemize}
+    \item Exponential recovery comes from a first-order relaxation equation.
+    \item The recovery time constant grows rapidly as temperature decreases.
+    \item Half-recovery time is a simple engineering metric: $t_{50}=\tau_{\mathrm{rec}}\ln 2$.
+    \item Cryogenic devices may retain radiation history much longer than room-temperature intuition suggests.
+\end{itemize}
+\end{document}

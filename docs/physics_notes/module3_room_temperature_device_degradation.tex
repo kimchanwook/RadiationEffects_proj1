@@ -1,0 +1,134 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{physics}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\newcommand{\kb}{k_\mathrm{B}}
+\newcommand{\taueff}{\tau_\mathrm{eff}}
+\begin{document}
+
+\title{Module 3: Room-Temperature Semiconductor Degradation and Device Consequences}
+\author{}
+\date{}
+\maketitle
+
+\section{Purpose of this module}
+This module translates defect density into measurable electronic degradation. The goal is to answer the practical question: once radiation-induced defects exist in silicon, what happens to carriers and what device metrics start to drift?
+
+\section{The central idea}
+Defects affect carrier motion and carrier lifetime. Once carriers cannot move or survive the same way they did in pristine silicon, device performance changes. In this project the main observables are:
+\begin{itemize}
+    \item effective carrier lifetime,
+    \item diffusion length,
+    \item leakage current,
+    \item charge collection efficiency.
+\end{itemize}
+
+\section{Lifetime degradation model}
+The project uses the first-order lifetime model
+\begin{equation}
+\frac{1}{\taueff} = \frac{1}{\tau_0} + K_\tau N_D,
+\end{equation}
+where $\tau_0$ is the pre-radiation lifetime and $K_\tau$ is a damage coefficient converting defect density into an added recombination rate.
+
+\subsection{Why the inverse lifetime appears}
+This equation is best understood by thinking in terms of \emph{rates}. If there are two independent ways for a carrier to disappear, the rates add. In a pristine material there is already some background recombination rate $1/\tau_0$. Defects add another channel. If that added channel is proportional to defect concentration, then
+\begin{equation}
+\text{total recombination rate} = \text{baseline rate} + \text{defect-induced rate}.
+\end{equation}
+That gives the inverse-lifetime form immediately.
+
+\subsection{Analogy}
+Imagine water leaving a bathtub through one drain. The emptying time is set by that drain alone. If you punch more holes in the tub wall, the \emph{rate} of water loss adds. Lifetime is like the characteristic time before carriers are removed; more drains mean shorter lifetime.
+
+\section{Link to SRH intuition}
+The lifetime model is a compact representation of Shockley-Read-Hall style trap-assisted recombination logic. A deeper microscopic model would include trap energy level, capture cross section, carrier densities, and temperature dependence. For this project, those complexities are compressed into $K_\tau N_D$.
+
+\section{Diffusion length model}
+Diffusion length is given by
+\begin{equation}
+L = \sqrt{D\taueff},
+\end{equation}
+where $D$ is the diffusivity.
+
+\subsection{Derivation and meaning}
+The diffusion equation tells us that over a characteristic time $\tau$, a random-walking carrier explores a characteristic distance proportional to $\sqrt{D\tau}$. This is the same square-root scaling found in ordinary diffusion problems such as dye spreading in water. The meaning is intuitive: a carrier that lives longer can wander farther before recombining.
+
+Substituting the lifetime model into the diffusion-length expression gives
+\begin{equation}
+L(N_D) = \sqrt{\frac{D}{\frac{1}{\tau_0}+K_\tau N_D}}.
+\end{equation}
+So increasing defect density reduces diffusion length.
+
+\section{Leakage current model}
+For a simple diode or detector, the model uses
+\begin{equation}
+\Delta I = \alpha \Phi V,
+\end{equation}
+where $\alpha$ is the current-related damage parameter and $V$ is active volume.
+
+\subsection{Why this is reasonable}
+Leakage current is related to defect-assisted generation inside the depleted region. If irradiation creates more generation centers, then the reverse leakage increases. The linear dependence on fluence is again a first-order constant-introduction model, similar in spirit to the defect-density law.
+
+\subsection{Rate-based interpretation}
+Suppose each defect contributes a small amount of generation current and the defect density grows roughly linearly with fluence. Then the total extra current also grows roughly linearly with fluence. The parameter $\alpha$ packages all of those microscopic details into one measurable coefficient.
+
+\section{Charge collection efficiency}
+A simple phenomenological relation is
+\begin{equation}
+\mathrm{CCE} = 1 - \exp\!\left(-\frac{L}{W}\right),
+\end{equation}
+where $W$ is a characteristic transport distance such as device thickness or an effective collection length scale.
+
+\subsection{Interpretation}
+This formula says that if the diffusion length is much larger than the distance the carrier needs to travel, charge collection is efficient. If the diffusion length becomes short compared to that distance, many carriers are lost before they are collected.
+
+An analogy is students walking across a campus during a storm. If everyone can survive the walk easily, most arrive at class. If the dangerous distance becomes too large relative to how long they can survive outside, fewer make it to the destination.
+
+\section{How the equations connect}
+Putting the pieces together gives the full room-temperature causal chain:
+\begin{align}
+N_D &= k_D \Phi, \\
+\frac{1}{\taueff} &= \frac{1}{\tau_0} + K_\tau N_D, \\
+L &= \sqrt{D\taueff}, \\
+\Delta I &= \alpha \Phi V, \\
+\mathrm{CCE} &= 1 - \exp\!\left(-\frac{L}{W}\right).
+\end{align}
+
+The equations are simple on purpose. Their value is that each one has a clear physical role and each stage maps onto an intuitive device consequence.
+
+\section{What this module means physically}
+\begin{itemize}
+    \item More radiation means more defects.
+    \item More defects mean more recombination and generation centers.
+    \item More recombination means shorter carrier lifetime.
+    \item Shorter lifetime means shorter diffusion length.
+    \item More generation centers mean more leakage current.
+    \item Shorter diffusion length means worse charge collection.
+\end{itemize}
+
+\section{Why room temperature is singled out here}
+Room temperature is the clean baseline. At this temperature, many thermally activated processes are active enough that simple effective coefficients often provide a reasonable first story. Later cryogenic modules modify this picture because migration, emission, and annealing slow dramatically.
+
+\section{What to remember from this module}
+\begin{itemize}
+    \item Inverse lifetimes add because recombination rates add.
+    \item Diffusion length is the square-root distance explored before recombination.
+    \item Leakage current increases because defects add generation pathways.
+    \item Charge collection degrades because carriers can no longer survive long enough to be collected efficiently.
+    \item This module is the main room-temperature device-degradation bridge.
+\end{itemize}
+\end{document}
