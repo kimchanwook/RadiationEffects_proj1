@@ -1,0 +1,52 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\title{Project Plan: From Radiation-Induced Defects to Device Degradation in Silicon}
+\begin{document}
+\maketitle
+
+\section*{Objective}
+Use Geant4 to model radiation transport in silicon and MATLAB to connect radiation-induced damage to semiconductor degradation and device performance loss.
+
+\section*{Modules}
+\subsection*{Module 1: Geant4}
+Simulate proton or neutron transport in a silicon slab and extract deposited energy, depth-dependent deposition, and recoil-like events.
+
+\subsection*{Module 2: Defect Model}
+Use a first-order relation
+\[
+N_D = k_D \Phi
+\]
+to relate fluence $\Phi$ to defect concentration $N_D$.
+
+\subsection*{Module 3: Lifetime Model}
+Use
+\[
+\frac{1}{\tau_{\mathrm{eff}}} = \frac{1}{\tau_0} + K_\tau N_D
+\]
+to represent recombination-center driven lifetime degradation.
+
+\subsection*{Module 4: Device Metrics}
+Use diffusion length and leakage current trends:
+\[
+L = \sqrt{D\tau_{\mathrm{eff}}}, \qquad \Delta I = \alpha \Phi V.
+\]
+
+\subsection*{Module 5: Cryogenic Extension}
+Add a temperature-dependent kinetics section for radiation-induced defects in silicon. The three first-order models are
+\[
+D_{\mathrm{def}}(T)=D_0 \exp\!\left(-\frac{E_m}{k_B T}\right), \qquad
+ e(T)=e_0 \exp\!\left(-\frac{E_a}{k_B T}\right), \qquad
+ R_{\mathrm{ann}}(T)=R_0 \exp\!\left(-\frac{E_{\mathrm{ann}}}{k_B T}\right).
+\]
+These represent defect migration, trap emission, and annealing, respectively.
+
+\section*{Deliverables}
+\begin{itemize}
+    \item Geant4 CSV outputs
+    \item MATLAB figures for defect density, lifetime, diffusion length, and leakage current
+    \item MATLAB cryogenic figures for migration, trap emission, emission time, and annealing versus temperature
+    \item technical notes and slide outline
+\end{itemize}
+
+\end{document}
