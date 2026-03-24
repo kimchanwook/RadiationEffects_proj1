@@ -1,0 +1,312 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{physics}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\newcommand{\kb}{k_{\mathrm B}}
+\newcommand{\Ed}{E_{\mathrm d}}
+\newcommand{\Tlat}{T_{\mathrm{lat}}}
+\newcommand{\Tmax}{T_{\max}}
+\newcommand{\pdisp}{P_{\mathrm{disp}}}
+\newcommand{\surv}{S_{\mathrm{surv}}}
+\newcommand{\Ydef}{Y_{\mathrm{def}}}
+
+\begin{document}
+
+\title{Module 2: Primary Defect Formation, Displacement Thresholds,\\ and Frenkel-Pair Physics in Silicon}
+\author{}
+\date{}
+\maketitle
+
+\section{Purpose of this module}
+
+Module 1 explained how radiation transports through silicon and how Geant4 gives us interaction histories, deposited energy, and recoil-like events. This module answers the next question: \emph{how does a radiation interaction actually become a crystal defect?}
+
+The key point is that defect generation is not best thought of as a simple linear law
+\begin{equation}
+N_D = k\Phi,
+\end{equation}
+because that equation hides the real physics. Primary damage begins when an incident particle transfers enough kinetic energy to a silicon lattice atom that the atom leaves its original lattice site. That displaced atom becomes a \textbf{primary knock-on atom} (PKA), and from that point forward the event may produce a vacancy, an interstitial, a Frenkel pair, or a larger collision cascade.
+
+So the real logic of Module 2 is
+\begin{equation}
+\text{incident particle} \rightarrow \text{recoil energy transfer} \rightarrow \text{PKA} \rightarrow \text{displacement event} \rightarrow \text{surviving primary defects}.
+\end{equation}
+
+This module is therefore the bridge between radiation transport and solid-state defect physics.
+
+\section{Why the linear defect law is too simple}
+
+The familiar approximation
+\begin{equation}
+N_D = k\Phi
+\end{equation}
+is useful only as a first engineering fit. It assumes that each increment of fluence contributes damage in an averaged, featureless way. In that approximation, all of the following are hidden inside the single coefficient $k$:
+\begin{itemize}
+    \item the projectile species and energy,
+    \item the collision kinematics,
+    \item the threshold displacement energy,
+    \item crystal-direction dependence,
+    \item local recombination and survival,
+    \item whether a recoil creates one defect or a small cascade.
+\end{itemize}
+
+That is acceptable for a placeholder model, but it is not a satisfying physics model. A more physical description starts from the recoil-energy spectrum and asks whether the transferred energy is large enough to create a lasting atomic rearrangement in the crystal.
+
+\section{Crystal-lattice picture of displacement}
+
+A silicon atom in a perfect crystal is not free. It sits in a locally stable bonding environment, meaning its equilibrium position is a local minimum of the crystal potential-energy landscape. In the full many-body description, the crystal energy is a function of all atomic coordinates,
+\begin{equation}
+U = U(\mathbf r_1, \mathbf r_2, \dots, \mathbf r_N).
+\end{equation}
+Displacing one atom means pushing the system from one local basin of this potential-energy surface into another configuration.
+
+A useful picture is a ball sitting in a shallow valley. Small perturbations make the ball oscillate inside the valley, but a sufficiently strong kick pushes it over the ridge and into a different location. In a crystal, the ``ridge'' is not a single one-dimensional hill; it is an effective barrier created by many neighboring atoms and by the geometry of the lattice. Radiation damage begins when the kick is strong enough that the struck atom no longer simply vibrates and return to its original site.
+
+\section{Threshold displacement energy}
+
+The practical summary of this barrier is the \textbf{threshold displacement energy}, denoted $\Ed$. The simplest displacement criterion is
+\begin{equation}
+T \ge \Ed,
+\end{equation}
+where $T$ is the recoil energy transferred to the lattice atom.
+
+Below threshold, the atom is disturbed but usually remains bound after phonon emission and local relaxation. Above threshold, a stable displacement becomes possible.
+
+It is important to state what $\Ed$ \emph{is not}. It is not simply the bond energy of one Si--Si bond. The displacement threshold is an \emph{effective dynamical barrier} that includes:
+\begin{itemize}
+    \item the many-body crystal environment,
+    \item momentum sharing with neighboring atoms,
+    \item crystallographic direction,
+    \item replacement-collision sequences,
+    \item local relaxation during the displacement event.
+\end{itemize}
+
+So $\Ed$ is an emergent material parameter for the displacement process, not merely a chemical bond strength.
+
+\subsection{Directional dependence}
+
+Because silicon is a crystal, the threshold need not be isotropic. A better statement is
+\begin{equation}
+\Ed = \Ed(\hat{\mathbf n}),
+\end{equation}
+where $\hat{\mathbf n}$ is the recoil direction relative to the crystal axes. Some directions are more open, some are more constrained, and this changes how easily the struck atom can move through the lattice.
+
+For modeling purposes, one can think of a hierarchy:
+\begin{enumerate}[label=\arabic*.]
+    \item constant $\Ed$ for the simplest model,
+    \item material-specific $\Ed$,
+    \item direction-dependent $\Ed(\hat{\mathbf n})$,
+    \item a distribution of thresholds when local variability is included.
+\end{enumerate}
+
+\section{Collision kinematics and recoil generation}
+
+Defect generation starts with energy transfer, not with defect concentration. Consider an incident particle of mass $m_1$ and kinetic energy $E$ scattering from a silicon atom of mass $m_2$. In a simple nonrelativistic two-body picture, the maximum recoil energy that can be transferred to the target atom is
+\begin{equation}
+\Tmax = \frac{4m_1m_2}{(m_1+m_2)^2} E.
+\end{equation}
+
+This equation already tells us something important: damage depends strongly on projectile type.
+\begin{itemize}
+    \item Neutrons are efficient at transferring energy directly to nuclei.
+    \item Electrons are much lighter and usually transfer less recoil energy, unless their incident energy is high.
+    \item Heavy ions can create dense local cascades.
+    \item Photons usually create displacement damage more indirectly.
+\end{itemize}
+
+A more physical defect model should therefore start from the radiation spectrum and the recoil-energy spectrum,
+\begin{equation}
+\phi(E) \rightarrow \frac{d\sigma(E)}{dT} \rightarrow \text{recoil events},
+\end{equation}
+rather than from fluence alone.
+
+\section{Primary knock-on atoms and the start of the cascade}
+
+When a silicon atom receives recoil energy $T$, it becomes a \textbf{primary knock-on atom}. The PKA is the first lattice atom directly kicked by the radiation interaction. If the transferred energy is above threshold, that atom can leave its original site and travel through the crystal.
+
+From there, several things may happen:
+\begin{enumerate}[label=\arabic*.]
+    \item it may lose energy and stop after a single displacement,
+    \item it may collide with neighboring atoms and create secondary recoils,
+    \item it may return and recombine with its original vacancy,
+    \item it may stop in a metastable interstitial position,
+    \item it may create a small collision cascade.
+\end{enumerate}
+
+So the minimal physical chain is
+\begin{equation}
+\text{incident particle} \rightarrow \text{PKA} \rightarrow \text{secondary recoils} \rightarrow \text{point defects or clusters}.
+\end{equation}
+
+This is why a recoil-aware model is more meaningful than a direct fluence-to-defect law.
+
+\section{How a vacancy and interstitial appear}
+
+The simplest primary defect is a \textbf{Frenkel pair}, consisting of
+\begin{itemize}
+    \item a vacancy: the empty original lattice site,
+    \item an interstitial: the displaced atom occupying a non-lattice position.
+\end{itemize}
+
+This process is more subtle than saying ``the atom got kicked out.'' A stable Frenkel pair requires two things:
+\begin{enumerate}[label=\arabic*.]
+    \item the struck atom must receive enough energy to leave its original potential well,
+    \item the displaced atom must avoid immediate recombination and come to rest in a metastable non-lattice configuration.
+\end{enumerate}
+
+So there are really two barriers in the story. First, the atom must escape its original lattice site. Second, after moving through the crystal, it must avoid falling back into the vacancy and instead settle into an interstitial-like state. In that sense, a stable interstitial is not just ``an atom in the wrong place''; it is an atom that survived a nonequilibrium trajectory through the lattice and ended in another metastable configuration.
+
+\section{Temperature dependence}
+
+Temperature enters the physics in more than one way.
+
+\subsection{Thermal vibrations before the collision}
+
+Atoms in the lattice are already vibrating. At finite temperature, the struck atom is not truly motionless in a rigid crystal. This means the displacement threshold is not perfectly sharp. Instead of a hard step at $\Ed$, there is often a thermally broadened transition in the displacement probability.
+
+\subsection{Immediate dynamic annealing}
+
+Even when a vacancy and interstitial are initially produced, they may recombine quickly. Higher temperature often increases local mobility and can therefore increase immediate recombination, reducing the number of \emph{surviving} primary defects.
+
+\subsection{Migration after creation}
+
+Once defects exist, vacancies and interstitials may migrate with rates often modeled by an Arrhenius law,
+\begin{equation}
+\Gamma = \Gamma_0 \exp\!\left(-\frac{E_m}{\kb \Tlat}\right),
+\end{equation}
+where $E_m$ is the migration barrier and $\Gamma_0$ is an attempt frequency. This migration kinetics belongs mainly to Module 3, but it is worth mentioning here because survival immediately after the recoil event already depends on short-time thermal mobility.
+
+\section{A better defect-yield model}
+
+A more physical module does not say simply ``defect concentration equals coefficient times fluence.'' Instead, it starts from recoil events and computes a defect yield. The clean conceptual form is
+\begin{equation}
+N_{\mathrm{stable}} = \int dE\, \phi(E) \int dT\, \frac{d\sigma(E)}{dT} \, \Ydef(T, \hat{\mathbf n}, \Tlat).
+\end{equation}
+Here:
+\begin{itemize}
+    \item $\phi(E)$ is the incident particle fluence spectrum,
+    \item $\frac{d\sigma}{dT}$ is the differential cross section for creating a recoil of energy $T$,
+    \item $\Ydef$ is the defect yield per recoil event.
+\end{itemize}
+
+\subsection{Hard-threshold yield}
+
+The simplest physically meaningful yield is
+\begin{equation}
+\Ydef(T)=
+\begin{cases}
+0, & T < \Ed,\\
+1, & T \ge \Ed.
+\end{cases}
+\end{equation}
+This is already better than $N_D = k\Phi$ because it explicitly uses recoil physics.
+
+\subsection{Probabilistic threshold with survival}
+
+A more realistic form separates displacement from survival:
+\begin{equation}
+\Ydef(T,\hat{\mathbf n},\Tlat) = \pdisp(T,\hat{\mathbf n},\Tlat)\,\surv(T,\hat{\mathbf n},\Tlat).
+\end{equation}
+Here
+\begin{itemize}
+    \item $\pdisp$ is the probability that the recoil actually displaces the atom from its site,
+    \item $\surv$ is the probability that the resulting vacancy--interstitial configuration survives immediate recombination.
+\end{itemize}
+
+A convenient smooth form for the displacement probability is
+\begin{equation}
+\pdisp(T,\Tlat)=\frac{1}{1+\exp\!\left[-\dfrac{T-E_{d}^{\mathrm{eff}}(\Tlat)}{\Delta(\Tlat)}\right]},
+\end{equation}
+where $\Delta$ represents thermal broadening and event-to-event variability.
+
+\subsection{Cascade-aware yield}
+
+At higher recoil energies, a single PKA can produce more than one stable defect. Then one may write
+\begin{equation}
+\Ydef(T,\hat{\mathbf n},\Tlat)=\nu(T,\hat{\mathbf n})\,\pdisp(T,\hat{\mathbf n},\Tlat)\,\surv(T,\hat{\mathbf n},\Tlat),
+\end{equation}
+where $\nu(T,\hat{\mathbf n})$ is the multiplicity of displacement damage generated by the recoil event.
+
+\section{What material dependence really means}
+
+Different materials have different damage behavior because they have different:
+\begin{itemize}
+    \item atomic masses,
+    \item crystal structures,
+    \item bonding geometries,
+    \item threshold displacement energies,
+    \item defect formation energies,
+    \item migration barriers.
+\end{itemize}
+
+So the ``potential the atom must overcome'' is not a universal number. In a more atomistic treatment, it comes from interatomic potentials or from first-principles electronic structure. For a generic pair-potential picture one might write
+\begin{equation}
+U = \sum_{i<j} V(r_{ij}),
+\end{equation}
+but for silicon, angular and many-body bonding effects matter, so a better schematic form is
+\begin{equation}
+U = \sum_{i<j} V^{(2)}(r_{ij}) + \sum_{i,j,k} V^{(3)}(r_{ij},r_{ik},\theta_{jik}).
+\end{equation}
+
+The project does not need to run full atomistic simulations inside the main MATLAB pipeline. But it is important to understand that parameters such as $\Ed$, formation energies, and migration barriers ultimately come from this deeper solid-state picture.
+
+\section{Primary damage versus surviving primary damage}
+
+A very important distinction is the difference between:
+\begin{itemize}
+    \item \textbf{primary damage:} defects that are initially attempted or created during the recoil event,
+    \item \textbf{surviving primary damage:} defects that remain after ultrafast local recombination and cascade relaxation.
+\end{itemize}
+
+This distinction helps organize the project pipeline:
+\begin{equation}
+N_{\mathrm{primary}} \rightarrow N_{\mathrm{surviving}} \rightarrow N_{\mathrm{evolving}}.
+\end{equation}
+Module 2 should produce the surviving primary defect population. Module 3 will then evolve that population in time and map it to device degradation.
+
+\section{What Geant4 should hand to Module 2}
+
+The natural input from Module 1 is not just total fluence. Better choices are:
+\begin{enumerate}[label=\arabic*.]
+    \item a recoil-energy spectrum,
+    \item an event-by-event recoil list,
+    \item a spatially resolved source term for above-threshold recoil production.
+\end{enumerate}
+
+Then Module 2 can compute physically meaningful source terms such as
+\begin{equation}
+G_V(\mathbf r,t), \qquad G_I(\mathbf r,t),
+\end{equation}
+for vacancy and interstitial generation. In the simplest source formulation,
+\begin{equation}
+G_V(\mathbf r) = G_I(\mathbf r) = \int dT\, R_{\mathrm{recoil}}(\mathbf r,T)\,\Ydef(T,\hat{\mathbf n},\Tlat),
+\end{equation}
+where $R_{\mathrm{recoil}}(\mathbf r,T)$ is the local recoil-production spectrum.
+
+\section{What to remember from this module}
+
+\begin{itemize}
+    \item Defect generation should begin with recoil physics, not with the linear law $N_D = k\Phi$.
+    \item A silicon atom must receive enough recoil energy to escape its local lattice potential well.
+    \item The practical displacement criterion is $T \ge \Ed$, but $\Ed$ is an effective threshold, not merely a bond energy.
+    \item A PKA may produce a vacancy, an interstitial, a Frenkel pair, or a larger cascade.
+    \item A stable interstitial requires not only displacement, but also survival against immediate recombination.
+    \item Temperature affects threshold broadening, short-time recombination, and later defect migration.
+    \item A better Module 2 output is a physically grounded vacancy/interstitial source term for later defect-evolution modeling.
+\end{itemize}
+
+\end{document}
