@@ -1,181 +1,197 @@
 MATLAB module overview
 ======================
 
-This folder contains an updated MATLAB-side implementation for the project:
+This folder contains the MATLAB side of the project:
+From Radiation-Induced Defects to Device Degradation in Silicon.
 
-    From Radiation-Induced Defects to Device Degradation in Silicon
+The MATLAB implementation now has two front-end modeling paths:
 
-The main change is that Module 2 has been upgraded from a simple phenomenological
-fluence-to-defect law,
+1. Legacy simplified path
+   fluence -> defect density -> lifetime degradation -> diffusion length loss
+   -> leakage current increase -> charge collection degradation
 
-    N_D = k_D * Phi,
+2. Updated Module 2 path
+   recoil events -> threshold displacement screening -> primary defect yield
+   -> surviving vacancy/interstitial source terms -> effective defect density
+   -> lifetime degradation -> diffusion length loss -> charge collection degradation
 
-into a recoil-based primary defect model with these physics ingredients:
+The new default scientific direction is the recoil-based Module 2 path.
+The older fluence/proxy functions are retained as simplified baseline models
+for comparison, debugging, and continuity.
 
-    recoil energy -> threshold displacement screening -> displacement probability
-    -> defect multiplicity -> immediate survival -> vacancy/interstitial sources
-
-The goal is still to keep the project compact and interview-friendly, but the
-front-end defect model is now much more physically grounded.
-
-
+--------------------------------------------------
 Main scripts
-------------
+--------------------------------------------------
 
 - main_defect_model.m
-  Stand-alone Module 2 study.
-  Generates plots of:
-    * displacement probability vs recoil energy
-    * defect multiplicity vs recoil energy
-    * survival fraction vs recoil energy
-    * Frenkel-pair yield vs recoil energy
+  Stand-alone Module 2 physics demonstration.
+  Intended to study recoil-threshold-survival behavior and visualize:
+  - displacement probability
+  - defect multiplicity
+  - survival fraction
+  - Frenkel-pair yield
 
-- main_import_geant4_pipeline.m
-  Imports Geant4 CSV outputs and uses the new recoil-based Module 2 model to
-  build effective defect densities before propagating into the existing
-  simplified lifetime / diffusion length / leakage / CCE chain.
+- main_lifetime_model.m
+  Downstream lifetime degradation model.
+
+- main_diffusion_length_model.m
+  Diffusion-length model driven by effective lifetime.
+
+- main_leakage_model.m
+  Simplified leakage-current model.
+  Currently retained as a compact engineering model.
 
 - main_full_pipeline.m
-  Full simplified pipeline with two modes:
-    * legacy_fluence
-    * module2_synthetic_recoil
+  End-to-end MATLAB demonstration.
+  At present, this should be viewed as a transitional full-chain script while
+  the newer recoil-based Module 2 is being integrated more deeply into all
+  downstream observables.
 
-  The default mode is the updated synthetic-recoil demonstration mode.
+- main_import_geant4_pipeline.m
+  Geant4-to-MATLAB import workflow.
+  This is the main entry point for using Geant4 recoil outputs inside the
+  recoil-based Module 2 physics chain.
 
+--------------------------------------------------
+Core helper functions for the updated Module 2 path
+--------------------------------------------------
 
-New Module 2 helper functions
------------------------------
+Primary-defect formation / recoil-physics helpers:
 
-All new Module 2 functions live inside functions/:
+- functions/module2_default_params.m
+- functions/threshold_displacement_energy.m
+- functions/displacement_probability.m
+- functions/defect_multiplicity_from_recoil.m
+- functions/survival_fraction_primary_defects.m
+- functions/frenkel_pair_yield.m
+- functions/defect_sources_from_recoil_list.m
+- functions/effective_defect_density_from_sources.m
 
-- module2_default_params.m
-  Central parameter struct for Module 2.
+These functions implement a first-pass physically improved Module 2 based on:
 
-- threshold_displacement_energy.m
-  Returns threshold displacement energy Ed for the chosen material and model.
+- recoil energy
+- threshold displacement energy
+- displacement probability
+- defect multiplicity
+- immediate defect survival
+- surviving vacancy/interstitial source estimation
 
-- displacement_probability.m
-  Computes probability that a recoil produces a displacement.
+This path is intended to replace the old purely phenomenological
+N_D = k * Phi style front-end as the main Module 2 model.
 
-- defect_multiplicity_from_recoil.m
-  Maps recoil energy into number of defect units created.
-
-- survival_fraction_primary_defects.m
-  Applies prompt survival / recombination correction.
-
-- frenkel_pair_yield.m
-  Combines threshold, probability, multiplicity, and survival into a total
-  surviving defect yield per recoil.
-
-- defect_sources_from_recoil_list.m
-  Main Module 2 engine for converting a recoil-event table into total and
-  optional depth-dependent vacancy/interstitial source terms.
-
-- effective_defect_density_from_sources.m
-  Maps vacancy/interstitial densities into one effective defect density that
-  can be consumed by the existing downstream simplified models.
-
-
-Existing downstream helper functions retained
----------------------------------------------
-
-These functions are assumed to remain in your original repo and are not
-rewritten here:
-
-- functions/defect_density_from_fluence.m
-  Legacy baseline model.
+--------------------------------------------------
+Downstream degradation helpers
+--------------------------------------------------
 
 - functions/lifetime_from_defects.m
 - functions/diffusion_length_from_lifetime.m
-- functions/leakage_current_from_fluence.m
 - functions/charge_collection_model.m
+
+These remain the main downstream bridge from effective defect density to
+device-level degradation observables.
+
+--------------------------------------------------
+Geant4 import helpers
+--------------------------------------------------
 
 - functions/read_geant4_event_summary.m
 - functions/read_geant4_depth_edep.m
 - functions/read_geant4_recoil_candidates.m
-- functions/estimate_fluence_from_events.m
-- functions/defect_density_from_depth_edep.m
-  Legacy depth proxy model.
 
+Among these, recoil_candidates is the most important input for the updated
+Module 2 path.
 
+The depth-dependent deposited-energy import can still be useful as a
+diagnostic quantity, but it is no longer the preferred primary bridge from
+Geant4 output to defect creation physics.
+
+--------------------------------------------------
+Legacy / simplified helper functions
+--------------------------------------------------
+
+The following functions are retained as simplified baseline models:
+
+- functions/legacy/defect_density_from_fluence.m
+- functions/legacy/defect_density_from_depth_edep.m
+- functions/legacy/estimate_fluence_from_events.m
+- functions/legacy/leakage_current_from_fluence.m
+
+These should be interpreted as legacy or compact engineering approximations,
+not as the main physically preferred Module 2 path.
+
+They are still useful for:
+- sanity checks
+- quick comparisons
+- debugging
+- reproducing earlier simplified results
+
+--------------------------------------------------
 Recommended starting points
----------------------------
+--------------------------------------------------
 
-1) Stand-alone Module 2 physics check
-   Run from inside matlab/:
+If you want to study the new Module 2 physics directly:
+- run main_defect_model.m
 
-       main_defect_model
+If you want to use Geant4-generated recoil outputs:
+- run main_import_geant4_pipeline.m
 
-   This is the best first check that the new recoil-threshold-survival physics
-   is behaving as expected.
+If you want a compact end-to-end MATLAB demonstration:
+- run main_full_pipeline.m
 
-2) Geant4 import workflow
-   Make sure these files exist in ../geant4/output/:
+All scripts should be run from inside the matlab/ folder unless adjusted.
 
-       event_summary.csv
-       depth_edep.csv
-       recoil_candidates.csv
+--------------------------------------------------
+How to use the Geant4 import pipeline
+--------------------------------------------------
 
-   Then run:
+1. Build and run the Geant4 case so that these files exist in ../geant4/output/:
+   - event_summary.csv
+   - depth_edep.csv
+   - recoil_candidates.csv
 
-       main_import_geant4_pipeline
+2. From inside matlab/, run:
+   main_import_geant4_pipeline
 
-   Output CSV files and figures will be written into matlab/output/.
+3. MATLAB will generate summary CSV files and figures inside matlab/output/
 
-3) Full simplified pipeline demonstration
-   Run:
+--------------------------------------------------
+Important modeling note
+--------------------------------------------------
 
-       main_full_pipeline
+The current recoil-based Module 2 is a first-pass physics upgrade.
+It is more physically grounded than the older fluence-only or deposited-energy
+proxy model, but it is still not a full atomistic cascade or defect-chemistry solver.
 
-   and choose the desired mode at the top of the script.
-
-
-Expected recoil table columns
------------------------------
-
-The new Module 2 bridge expects recoil_candidates.csv to provide at least:
-
-- kinetic_energy_eV
-
-Optional columns for depth profiles:
-
-- z_um
-
-If your Geant4 recoil table uses a different column name, update the column-name
-fields in module2_default_params.m.
-
-
-Current modeling status
------------------------
-
-This updated Module 2 includes:
-
+What it includes:
+- recoil-based screening
 - threshold displacement physics
-- recoil-energy dependence
-- simple multiplicity laws
+- simple defect multiplicity
 - immediate survival correction
-- vacancy/interstitial accounting
-- effective defect mapping for downstream models
+- vacancy/interstitial source estimation
 
-This updated Module 2 does NOT yet include:
+What it does not yet include in full detail:
+- fully resolved cascade transport
+- full defect-species chemistry
+- time-dependent vacancy/interstitial reaction kinetics
+- MD/DFT-calibrated material-specific defect libraries
+- complete leakage-current reformulation from defect populations
 
-- full atomistic cascade simulation
-- explicit defect-species chemistry
-- time-dependent vacancy/interstitial recombination kinetics
-- fully calibrated material-specific parameters from MD or DFT
-- leakage-current model tied directly to vacancy/interstitial populations
+So this MATLAB framework should currently be viewed as:
+a compact multistage bridge from recoil information to simplified
+device-degradation observables, with the newer Module 2 now centered on
+primary defect formation physics rather than a purely phenomenological
+defect-density law.
 
-So this remains a compact multistage physics model, not a replacement for MD,
-TCAD, or a validated displacement-damage chemistry code.
+--------------------------------------------------
+Extension modules
+--------------------------------------------------
 
+Separate extension files are also included for additional temperature/trapping
+studies:
 
-Recommended integration order into the repo
--------------------------------------------
+- README_cryogenic_extension.txt
+- README_persistent_trapping_extension.txt
+- main_cryogenic_extension.m
+- main_persistent_trapping_extension.m
 
-1) Add the new functions into matlab/functions/
-2) Replace main_defect_model.m with the stand-alone Module 2 version
-3) Replace main_import_geant4_pipeline.m with the new recoil-based version
-4) Update main_full_pipeline.m
-5) Keep the old fluence-only and deposited-energy-only functions as baseline
-   comparison models, not as the main Module 2 path
-
+Related helper functions for those extensions remain in functions/.
