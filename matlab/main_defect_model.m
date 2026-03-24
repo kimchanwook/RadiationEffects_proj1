@@ -1,43 +1,69 @@
 %% main_defect_model.m
-% From Radiation-Induced Defects to Device Degradation in Silicon
-% Module: Defect density build-up from radiation fluence
-%
-% This script computes a simple first-order defect density model:
-%   N_D = k_D * Phi
-% where N_D is defect concentration [cm^-3], k_D is an effective defect
-% introduction coefficient [cm^-1], and Phi is particle fluence [cm^-2].
-%
-% The goal is not to claim a universally exact model, but to build a clean
-% physics-based bridge from radiation exposure to semiconductor damage.
+% Module 2 stand-alone study:
+% recoil energy -> displacement probability -> multiplicity -> survival -> yield
 
 clear; clc; close all;
-
 addpath('functions');
 
-%% User-adjustable parameters
-Phi = logspace(8, 14, 300);   % fluence [cm^-2]
-k_D = 1e2;                    % effective defect introduction coefficient [cm^-1]
-
-%% Compute defect density
-N_D = defect_density_from_fluence(Phi, k_D);
-
-%% Plot
-fig = figure('Name', 'Defect Density vs Fluence', 'Color', 'w');
-loglog(Phi, N_D, 'LineWidth', 2);
-grid on;
-xlabel('Fluence, \Phi [cm^{-2}]');
-ylabel('Defect concentration, N_D [cm^{-3}]');
-title('Defect Density Build-Up with Radiation Fluence');
-
-%% Save figure
 outdir = fullfile('output');
 if ~exist(outdir, 'dir')
     mkdir(outdir);
 end
-saveas(fig, fullfile(outdir, 'defect_density_vs_fluence.png'));
 
-%% Display a few sample values
-sample_idx = round(linspace(1, numel(Phi), 5));
-T = table(Phi(sample_idx).', N_D(sample_idx).', ...
-    'VariableNames', {'Fluence_cm2', 'DefectDensity_cm3'});
-disp(T);
+%% ------------------------ Parameters -----------------------------------
+p = module2_default_params('Si');
+Trecoil_eV = linspace(0, 500, 1000);
+
+%% ------------------------ Module 2 physics -----------------------------
+[Y, details] = frenkel_pair_yield(Trecoil_eV, 'Si', 'Params', p);
+
+%% ------------------------ Save sample table ----------------------------
+sample_idx = round(linspace(1, numel(Trecoil_eV), 8));
+Tsample = table(Trecoil_eV(sample_idx).', ...
+                repmat(details.Ed_eV(1), numel(sample_idx), 1), ...
+                details.Pdisp(sample_idx).', ...
+                details.nu(sample_idx).', ...
+                details.S(sample_idx).', ...
+                Y(sample_idx).', ...
+    'VariableNames', {'Trecoil_eV', 'Ed_eV', 'Pdisp', 'Multiplicity', 'Survival', 'Yield'});
+writetable(Tsample, fullfile(outdir, 'module2_recoil_yield_samples.csv'));
+
+%% ------------------------ Figure 1: Pdisp -----------------------------
+fig1 = figure('Name', 'Module 2 Displacement Probability', 'Color', 'w');
+plot(Trecoil_eV, details.Pdisp, 'LineWidth', 2);
+grid on;
+xlabel('Recoil energy [eV]');
+ylabel('Displacement probability');
+title('Module 2: Displacement Probability vs Recoil Energy');
+saveas(fig1, fullfile(outdir, 'fig_module2_displacement_probability.png'));
+
+%% ------------------------ Figure 2: multiplicity ----------------------
+fig2 = figure('Name', 'Module 2 Multiplicity', 'Color', 'w');
+plot(Trecoil_eV, details.nu, 'LineWidth', 2);
+grid on;
+xlabel('Recoil energy [eV]');
+ylabel('Defect multiplicity');
+title('Module 2: Defect Multiplicity vs Recoil Energy');
+saveas(fig2, fullfile(outdir, 'fig_module2_multiplicity.png'));
+
+%% ------------------------ Figure 3: survival --------------------------
+fig3 = figure('Name', 'Module 2 Survival', 'Color', 'w');
+plot(Trecoil_eV, details.S, 'LineWidth', 2);
+grid on;
+xlabel('Recoil energy [eV]');
+ylabel('Survival fraction');
+title('Module 2: Survival Fraction vs Recoil Energy');
+saveas(fig3, fullfile(outdir, 'fig_module2_survival_fraction.png'));
+
+%% ------------------------ Figure 4: total yield -----------------------
+fig4 = figure('Name', 'Module 2 Yield', 'Color', 'w');
+plot(Trecoil_eV, Y, 'LineWidth', 2);
+grid on;
+xlabel('Recoil energy [eV]');
+ylabel('Surviving defect yield per recoil');
+title('Module 2: Frenkel-Pair Yield vs Recoil Energy');
+saveas(fig4, fullfile(outdir, 'fig_module2_frenkel_pair_yield.png'));
+
+fprintf('\nModule 2 stand-alone study complete.\n');
+fprintf('Results saved to: %s\n', outdir);
+disp(Tsample);
