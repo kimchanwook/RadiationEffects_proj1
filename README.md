@@ -1,2 +1,2 @@
 # RadiationEffects_proj1
-The objective is to construct a compact, physics-based framework that connects radiation transport in silicon to semiconductor degradation. Geant4 provides the front-end description of particle interactions and energy transfer, while MATLAB provides the back-end defect and device-degradation model.
+The objective is to construct a compact, physics-based framework that connects radiation transport in silicon to semiconductor degradation. Geant4 provides the front-end description of particle interactions and energy transfer, while MATLAB provides the back-end defect and device-degradation model. `This work was conducted with the assistance of a large language model (LLM), specifically ChatGPT`.
